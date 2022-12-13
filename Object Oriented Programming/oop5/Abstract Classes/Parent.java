@@ -4,7 +4,7 @@ public abstract class Parent{
 
     //Creating Constructor
     public Parent(int age){
-        this.age = age;
+        Parent.age = age;
     }
 
     //If One or more abstract methods are present in the class then the class should be declared as an abstract class
