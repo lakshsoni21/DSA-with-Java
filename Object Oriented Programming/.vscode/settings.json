@@ -1,0 +1,7 @@
+{
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.sourcePaths": [
+        "oop6/ObjectClonning/mannual",
+        "oop6/ObjectClonning"
+    ]
+}
