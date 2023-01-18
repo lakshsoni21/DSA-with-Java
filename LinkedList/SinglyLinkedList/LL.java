@@ -1,5 +1,7 @@
 package SinglyLinkedList;
 
+import java.util.SortedMap;
+
 public class LL {
 
     //Our linked list have these three variables
@@ -76,6 +78,25 @@ public class LL {
         node.next = temp;
         size++;
 
+    }
+
+    //Insert using Recursion it's public so user can access this
+    public void insertRec(int index, int value){
+        head = insertRec(index, value, head);
+    }
+
+    //It's private so we don't want to access this from user
+    private Node insertRec(int index, int value, Node node){
+
+        if(index == 0){
+            Node temp = new Node(value);
+            temp.next = node;
+            size++;
+            return temp;
+        }
+
+        node.next = insertRec(index-1, value, node.next);
+        return node;
     }
 
     //To Delete the element at particular index
@@ -174,6 +195,16 @@ public class LL {
 
     }
 
+    public int getIndex(Node node){
+        Node temp = head;
+        int i = 0;
+        while(temp != node){
+            temp = temp.next;
+            i++;
+        }
+        return i;
+    }
+
     //To Disply our list
     public void display(){
         //A reference variable named temp is pointing out to the object that head is pointing out to
@@ -233,5 +264,519 @@ public class LL {
             this.next = next;
         }
     }
+
+    //Question to remove duplicates from the list
+    public void removeDuplicates(){
+        Node node = head;
+
+        //Traverse whole list
+
+        while(node.next != null){
+            if(node.next.value == node.value){
+                node.next = node.next.next;
+                size--;
+            } else{
+                node = node.next;
+            }
+        }
+        tail = node;
+        tail.next = null;
+    }
+
+    //Question 3 --> To merge two sorted list great!!
+    public static LL mergeSortedList(LL list1, LL list2){
+        LL ans = new LL();
+        Node node = list1.head;
+        Node temp = list2.head;
+
+        while(node != null && temp != null){
+
+            if(node.value <= temp.value){
+                ans.insertLast(node.value);
+                node = node.next;
+            }
+
+            if(node == null){
+                break;
+            }
+
+            if(temp.value <= node.value){
+                ans.insertLast(temp.value);
+                temp = temp.next;
+            }
+
+        }
+
+        while(node != null){
+            ans.insertLast(node.value);
+        }
+
+        while(temp != null){
+            ans.insertLast(temp.value);
+            temp = temp.next;
+        }
+
+        return ans;
+    }
+
+    //Question 4 --> To Detect wether the linked list contains a cycle or not
+    public boolean hasCycle() {
+        Node f = head;
+        Node s = head;
+        while(f != null && f.next !=null){
+            f = f.next.next;
+            s = s.next;
+            if(f == s){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Question5 --> To Find the length of the Cycle
+    //1->2->3->4->5->6->7->8->4
+    //Here i cant create a cycle but you can see out 8 is pointing out to the 4 which is previous it creates a cycle
+    //here the Length of the cycle is : 5
+    //We will find the length using the Fast and Slow pointer method
+    //Amazon and Microsoft
+    public int lengthOfCycle(){
+        Node f = head;
+        Node s = head;
+        while(f != null && f.next !=null){
+            f = f.next.next;
+            s = s.next;
+            if(f == s){
+                int length = 0;
+                s = s.next;
+                while(f != s){
+
+                    s = s.next;
+                    length++;
+                }
+                return length;
+            }
+        }
+        return 0;
+    }
+
+    //Question5 --> To find the starting node of cycle where the cycle is starting
+    public Node detectCycleStart(){
+        Node f = head;
+        Node s = head;
+        int length = lengthOfCycle();
+
+        //If the length is = 0 means the cycle is not present
+        if(length == 0){
+            System.out.println("The cycle is not present");
+            return null;
+        }
+
+        //Move s length of cycle times
+        for(int i=1; i <= length; i++){
+            s = s.next;
+        }
+        //Now move f and s forward one jump until they reach both reach at same node
+        while(f != s){
+            f = f.next;
+            s = s.next;
+        }
+        //Now f and s is on the node which is starting node of the cycle
+        return f;
+    }
+
+    //Question 6 --> Happy number
+    //You have to return wether the number is happy or not 
+    //n=19 --> 1^2 + 9^2 = 82 --> 8^2+2^2=68 --> 6^2 + 8^2 = 100 --> 1^2 + 0^2 + 0^2 = 1
+    //If doing the sumation like this if it reaches to 1 then it is a happy number
+    //if it not reaches to 1 it means it is not happy number
+    //When you let's say take n=4 then you will do sum again and again and you will find that 
+    //You reached at 4 again it means Cycle Linked List
+
+    //Kunal Kushwaha Logic
+    public int calculateSum(int n){
+        int ans = 0;
+        while(n > 0){
+            int rem = n%10;
+            ans = ans + rem*rem;
+            n = n/10;
+        }
+        return ans;
+    }
+
+    public boolean isHappy(int n){
+        int slow = n;
+        int fast = n;
+        do{
+            slow = calculateSum(slow);
+            fast = calculateSum(calculateSum(fast));
+        }while(slow != fast);
+
+        if(slow == 1){
+            return true;
+        }
+
+        return false;
+    }
+
+    private int lengthOfLL(){
+        Node temp = head;
+        int counter = 1;
+        while(temp != null){
+            temp = temp.next;
+            counter++;
+        }
+
+        return counter;
+    }
+
+
+    //Q7 --> Find middle node of linked list
+    // public Node middleNode(){
+
+    //     if(head == null){
+    //         return null;
+    //     }
+
+    //     if(size == 1){
+    //         return head;
+    //     }
+
+    //     Node temp = head;
+    //     int length = lengthOfLL();
+    //     for(int i=1; i <= length/2; i++){
+    //         temp = temp.next;
+    //     }
+    //     return temp;
+    // }
+
+    //Another way to solve this problem (Middle Node)
+    //The fast node is movind twice the speed of slow node 
+    //When the fast node reaches at the end of LL (tail) then the second node will be pointing to the middle node 
+    public Node middleNode(){
+        if(head == null){
+            return null;
+        }
+
+        if(size == 1){
+            return head;
+        }
+
+        Node f = head;
+        Node s = head;
+        while(f != null && f.next != null){
+            
+            s = s.next;
+            f = f.next.next;
+            
+        }
+        return s;
+    }
+
+    public void headAndTail(){
+        System.out.println(head.value);
+        System.out.println(tail.value);
+    }
+
+    //Q8 --> Bubble sort
+    //In this you know we sort the left part then the right part and then we merge
+
+
+
+    public void sort(){
+        Node node = head;
+        Node max = head;
+
+        for(int i=0; i < size; i++){
+
+            if(i == size-1){
+                return;
+            }
+
+            for(int j=0; j < size-i; j++){
+
+                if(node.value >= max.value){
+                    max = node;
+                }
+                if(j != size-i-1){
+                    node = node.next;
+                }
+
+            }
+
+            //Edge Cases
+            if(max == head){
+                Node temp = node.next;
+                head = max.next;
+                node.next = max;
+                max.next = temp;
+            } else{
+                Node beforeMax = get(getIndex(max) - 1);
+                beforeMax.next = max.next;
+                max.next = node.next;
+                node.next = max;
+            }
+
+            if(i == 0){
+                tail = max;
+            }
+            //After traversing the Linked List 
+            //Reset the node and max to head
+            node = head;
+            max = head;
+
+        }
+    }
+
+    //Q9 To reverse linked list using recurssion (In Google, Apple)
+
+    public void reverseList(){
+        Node node = reverse(head, 0);
+    }
+
+    public Node reverse(Node node, int i){
+        if(node == tail){
+            head = node;
+            return node;
+        }
+
+        Node afterNode = reverse(node.next, i+1);
+        afterNode.next = node;
+        node.next = null;
+        if(i == 0){
+            tail = node;
+        }
+        return node;
+    }
+
+    //Reversing the list using Iterative 
+    public void reverseIterative(){
+        Node prev = null;
+        Node pres = head;
+        Node after = head.next;
+        tail = pres;
+        while(pres != null){
+            pres.next = prev;
+            prev = pres;
+            pres = after;
+            if(after != null){
+                after = after.next;
+            }
+        }
+        head = prev;
+    }
+
+    //Q10 Linked List reverse from left to right
+
+    public void reverseBetween(int left, int right){
+        Node beforeLeft = head;
+        Node afterRight = head;
+
+        Node leftNode = find(left);
+        Node rightNode = find(right);
+        
+        int indexLeft = getIndex(leftNode);
+        int indexRight = getIndex(rightNode);
+
+        if(leftNode != head){
+            beforeLeft = get(indexLeft-1);
+        }
+
+        if(rightNode != tail){
+            afterRight = get(indexRight+1);
+        }
+        
+        Node node = reverseBetween(leftNode, rightNode);
+
+        if(leftNode != head){
+            beforeLeft.next = rightNode;
+        }
+        if(rightNode != tail){
+            leftNode.next = afterRight;
+        }
+
+        if(leftNode == head){
+            head = rightNode;
+        }
+
+        if(rightNode == tail){
+            tail = leftNode;
+            leftNode.next = null;
+        }
+
+
+    }
+
+    private Node reverseBetween(Node left, Node right){
+
+        if(left == right){
+            return  left;
+        }
+
+        Node afterNode = reverseBetween(left.next, right);
+        afterNode.next = left;
+
+        return left;
+
+    }
+
+    //Q11 Is your list is a palindrome or not
+    public boolean isPalindrome(){
+
+        int arr[] = new int[size];
+        Node node = head;
+        boolean ans = false;
+
+        for(int i=0; i < size; i++){
+            arr[i] = node.value;
+            node = node.next;
+        }
+        node = head;
+        for(int i=size-1; i >= 0; i--){
+            if(arr[i] == node.value){
+                node = node.next;
+                ans = true;
+            } else{
+                ans = false;
+                return ans;
+            }
+        }
+        return ans;
+    }
+
+    //Q12 Reorder Linked List
+    public void reorder(){
+
+        Node hf = head;
+        Node hs = tail;
+
+        Node mid = middleNode();
+        mid = mid.next;
+
+        reverseBetween(mid.value, tail.value);
+ 
+        while(hf != null && hs != null){
+            Node temp = hf.next;
+            hf.next = hs;
+            hf = temp;
+
+            temp = hs.next;
+            hs.next = hf;
+            hs = temp;
+        }
+
+        if(hf!=null){
+            hf.next = null;
+        }
+    }
+
+    // Q13 Reverse K nodes
+    public void reverseK(int k){
+
+        if(k == size){
+            reverseIterative();
+            return;
+        }
+
+        Node left = head;
+        Node right = head;
+
+        while(right != null){
+
+            for(int i=1; i < k; i++){
+
+                if(right == null){
+                    return;
+                }
+
+                right = right.next;
+            }
+            if(right == null){
+                return;
+            }
+
+            reverseBetween(left.value, right.value);
+            left = left.next;
+            right = left;
+        }
+
+    }
+
+    // Q14 ReverseAlternate K nodes means K nodes reverse karo or fir agli k nodes chor do or fir uski agli vali reverse karo
+    //means ek set of nodes ko reverse karo fir uske agli vali ko skip karo or fir next vali reverse karo
+    public void reverseAlternateK(int k){
+
+        if(k == size){
+            reverseIterative();
+            return;
+        }
+
+        Node left = head;
+        Node right = head;
+        int counter = 1;
+
+        while(right != null){
+
+            if(counter % 2 == 0){
+
+                for(int i=1; i < k; i++){
+                    right = right.next;
+                    if(right == null){
+                        return;
+                    }
+                }
+                right = right.next;
+                left = right;
+                counter++;
+
+            } else{
+
+                for(int i=1; i < k; i++){
+    
+                    right = right.next;
+
+                    if(right == null){
+                        return;
+                    }
+    
+                }
+    
+                reverseBetween(left.value, right.value);
+                left = left.next;
+                right = left;
+                counter++;
+
+            }
+
+        }
+
+    }
+
+    // Q To Rotate the List by k times from the right
+    // example - 1-2-3-4-5 --> k=1 ans= 5-1-2-3-4, k=2 ans - 4-5-1-2-3
+    public void rotateK(int k){
+
+       if(k <= 0 || head == null || head.next == null){
+        return;
+       }
+
+       tail.next = head;
+
+       int rotation = k % size;
+       int skipNodes = size - rotation;
+
+       Node newTail = head;
+
+       for(int i=1; i < skipNodes;  i++){
+        newTail = newTail.next;
+       }
+
+       Node newHead = newTail.next;
+       head = newHead;
+
+       newTail.next = null;
+
+    }
+
+
 
 }
